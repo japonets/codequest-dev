@@ -6,6 +6,14 @@ type Planet = {
     size: number; // tamanho do planeta
 }
 
+type PlanetPosition = {
+  x: number;
+  y: number;
+  size: number;
+  color: string;
+  orbitRadius: number;
+};
+
 export const planets: Planet[] = [
     {
         name: 'GDScript',
@@ -23,4 +31,4 @@ export const planets: Planet[] = [
     }
 ];
 
-export type { Planet };
+export type { Planet, PlanetPosition };

@@ -3,14 +3,7 @@ import { planets } from '../../data/planets';
 import { drawSun, drawPlanets, drawOrbits, drawStars } from '../../utils/drawHelpers';
 import useAnimation from '../../hooks/useAnimation';
 import type { Star } from "../../data/stars";
-
-type PlanetPosition = {
-  x: number;
-  y: number;
-  size: number;
-  color: string;
-  orbitRadius: number;
-};
+import type { PlanetPosition } from "../../data/planets";
 
 const SolarSystem: React.FC = () => {
 
@@ -29,30 +22,43 @@ const SolarSystem: React.FC = () => {
     
 
     useEffect(() => {
-            const canvas = canvasRef.current;
+        const canvas = canvasRef.current;
+        if (!canvas) return;
 
-            if (!canvas) return;
-            ctxRef.current = canvas.getContext('2d'); //ctx é o objeto que tem todos os métodos de desenho
+        
+        const handleResize = () => { 
 
-            if (!ctxRef.current) return;
+            canvas.width = window.innerWidth
+            canvas.height = window.innerHeight
+            centerRef.current.x = canvas.width / 2;
+            centerRef.current.y = canvas.height / 2;
+            
+        }//função para lidar com o redimensionamento da janela, garantindo que o canvas se ajuste ao novo tamanho
 
-            const centerX = centerRef.current.x = canvas.width / 2;
-            const centerY = centerRef.current.y = canvas.height / 2;
+        const centerX = centerRef.current.x = canvas.width / 2;
+        const centerY = centerRef.current.y = canvas.height / 2;
 
-            planetPositionRef.current = planets.map((planet, index) => ({
-                x: centerX + planet.orbitRadius * Math.cos(planetAngles.current[index]),
-                y: centerY + planet.orbitRadius * Math.sin(planetAngles.current[index]),
-                size: planet.size,
-                color: planet.color,
-                orbitRadius: planet.orbitRadius,
-            }));
+        planetPositionRef.current = planets.map((planet, index) => ({
+            x: centerX + planet.orbitRadius * Math.cos(planetAngles.current[index]),
+            y: centerY + planet.orbitRadius * Math.sin(planetAngles.current[index]),
+            size: planet.size,
+            color: planet.color,
+            orbitRadius: planet.orbitRadius,
+        }));
+        
+        window.addEventListener('resize', handleResize)
 
-            starsRef.current = Array.from({ length: 600 }, () => ({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                radius: Math.random() * 2,
-                opacity: Math.random(),
-            }))
+        ctxRef.current = canvas.getContext('2d'); //ctx é o objeto que tem todos os métodos de desenho
+        if (!ctxRef.current) return;
+
+        starsRef.current = Array.from({ length: 600 }, () => ({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            radius: Math.random() * 2,
+            opacity: Math.random(),
+        }))
+
+        return () => window.removeEventListener('resize', handleResize)
 
     }, []); //o array vazio [] indica que o efeito deve ser executado apenas uma vez, quando o componente for montado.
 
