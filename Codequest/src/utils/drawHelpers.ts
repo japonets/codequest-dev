@@ -1,4 +1,5 @@
 import type { Planet } from "../data/planets";
+import type { Star } from "../data/stars";
 
 type PlanetPosition = {
     x: number;
@@ -40,4 +41,14 @@ const drawOrbits = (ctx: CanvasRenderingContext2D, planets: Planet[], centerX: n
     });
 }
 
-export { drawSun, drawPlanets, drawOrbits }
+const drawStars = (ctx: CanvasRenderingContext2D, stars: Star[]) => {
+
+    stars.forEach(star => {
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${star.opacity})`;
+        ctx.fill();
+    });
+};
+
+export { drawSun, drawPlanets, drawOrbits, drawStars };

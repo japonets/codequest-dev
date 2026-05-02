@@ -15,7 +15,7 @@ export const planets: Planet[] = [
         size: 15
     },
     {
-        name: 'Mars',
+        name: 'Mars', //coloquei mars por enquanto só pra combinar com a cor rs
         orbitRadius: 150,
         rotationSpeed: 0.0015,
         color: 'red',

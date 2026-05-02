@@ -1,7 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 import { planets } from '../../data/planets';
-import { drawSun, drawPlanets, drawOrbits } from '../../utils/drawHelpers';
+import { drawSun, drawPlanets, drawOrbits, drawStars } from '../../utils/drawHelpers';
 import useAnimation from '../../hooks/useAnimation';
+import type { Star } from "../../data/stars";
 
 type PlanetPosition = {
   x: number;
@@ -24,6 +25,8 @@ const SolarSystem: React.FC = () => {
     const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
     const centerRef = useRef({ x: 0, y: 0 });
     const planetPositionRef = useRef<PlanetPosition[]>([]);
+    const starsRef = useRef<Star[]>([]);
+    
 
     useEffect(() => {
             const canvas = canvasRef.current;
@@ -44,6 +47,13 @@ const SolarSystem: React.FC = () => {
                 orbitRadius: planet.orbitRadius,
             }));
 
+            starsRef.current = Array.from({ length: 600 }, () => ({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                radius: Math.random() * 2,
+                opacity: Math.random(),
+            }))
+
     }, []); //o array vazio [] indica que o efeito deve ser executado apenas uma vez, quando o componente for montado.
 
 
@@ -58,6 +68,9 @@ const SolarSystem: React.FC = () => {
       const radius = 30;
 
       ctx.clearRect(0, 0, canvas.width, canvas.height); //limpa o canvas para redesenhar os planetas na nova posição
+
+      //estrelas
+      drawStars(ctx, starsRef.current); //chama a função drawStars para desenhar as estrelas no fundo do canvas. O array de estrelas é passado como argumento.
 
       //sol
       drawSun(ctx, centerX, centerY, radius);
