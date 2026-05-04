@@ -19,15 +19,22 @@ export const planets: Planet[] = [
         name: 'GDScript',
         orbitRadius: 300,
         rotationSpeed: 0.0015,
-        color: 'gray',
+        color: '#15e974',
         size: 15
     },
     {
         name: 'Mars', //coloquei mars por enquanto só pra combinar com a cor rs
         orbitRadius: 150,
-        rotationSpeed: 0.0015,
-        color: 'red',
+        rotationSpeed: 0.0018,
+        color: '#a01919',
         size: 12
+    },
+    {
+        name: 'Earth',
+        orbitRadius: 220,
+        rotationSpeed: 0.002,
+        color: '#3f0cca',
+        size: 14
     }
 ];
 

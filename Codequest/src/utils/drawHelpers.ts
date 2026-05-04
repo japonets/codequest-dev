@@ -1,19 +1,11 @@
-import type { Planet } from "../data/planets";
-import type { Star } from "../data/stars";
+import type { Planet, PlanetPosition } from "../data/planets";
+import type { Star, ShinyStar } from "../data/stars";
 
-type PlanetPosition = {
-    x: number;
-    y: number;
-    size: number;
-    color: string;
-    orbitRadius: number;
-}
 
-const drawSun = (ctx: CanvasRenderingContext2D, centerX: number, centerY: number, radius: number) => {
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, radius, 0, Math.PI * 2); //desenha um círculo no centro do canvas
-    ctx.fillStyle = 'yellow'; //cor do sol
-    ctx.fill(); //preenche o círculo com a cor definida
+const drawSun = (ctx: CanvasRenderingContext2D, centerX: number, centerY: number, radius: number, image: HTMLImageElement) => {
+
+    if (!image) return  // se ainda não carregou, pula
+    ctx.drawImage(image, centerX - radius*2.5, centerY - radius*2.5, radius * 5, radius * 5)
 }
 
 const drawPlanets = (ctx: CanvasRenderingContext2D, planetPosition: PlanetPosition[], angles: number[], centerX: number, centerY: number) => {
@@ -41,12 +33,23 @@ const drawOrbits = (ctx: CanvasRenderingContext2D, planets: Planet[], centerX: n
     });
 }
 
-const drawStars = (ctx: CanvasRenderingContext2D, stars: Star[]) => {
+const drawStars = (ctx: CanvasRenderingContext2D, stars: Star[], shinyStars: ShinyStar[]) => {
 
     stars.forEach(star => {
         ctx.beginPath();
         ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(255, 255, 255, ${star.opacity})`;
+        ctx.fill();
+    });
+
+    shinyStars.forEach(star => {
+        ctx.beginPath();
+        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${star.opacity})`;
+        star.opacity += star.shine; 
+        if (star.opacity < 0 || star.opacity > 1) { 
+            star.shine = -star.shine; //inverte a direção do brilho quando a opacidade atinge os limites de 0 ou 1, criando um efeito de piscar
+        }
         ctx.fill();
     });
 };

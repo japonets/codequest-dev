@@ -5,4 +5,8 @@ type Star = {
     opacity: number;
 }
 
-export type { Star };
+type ShinyStar = Star & {
+    shine: number;
+}
+
+export type { Star, ShinyStar };
