@@ -1,6 +1,39 @@
 import type { Planet, PlanetPosition } from "../data/planets";
 import type { Star, ShinyStar } from "../data/stars";
 
+const hexToRgb = (hex: string) => ({ //função para converter uma cor hexadecimal em RGB
+  r: parseInt(hex.slice(1, 3), 16), 
+  g: parseInt(hex.slice(3, 5), 16),  
+  b: parseInt(hex.slice(5, 7), 16),  
+})
+
+const lerp = (a: number, b: number, t: number) => a + (t * (b - a))//função para interpolar entre dois valores a e b com base em um fator t (0 a 1)
+
+const drawBackground = (ctx: CanvasRenderingContext2D, width: number, height: number, transitionRef: number, centerX: number, centerY: number) => {
+
+    const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, width * 0.75); //cria um gradiente radial para o fundo do canvas, com o centro no sol e se expandindo até as bordas do canvas
+
+    const darkColors = ['#220144', '#190331', '#0e0730', '#0f051b', '#000000']
+    const lightColors = ['#ffffff', '#d2d2d2', '#a2a2a2', '#6f6f6f', '#494949']
+    let index = 0;
+
+    for(let i = 0; i <= 1; i += 0.25) { //faz uma transicao suave entre os temas claro e escuro, interpolando as cores do gradiente com base no valor de transitionRef (0 a 1)
+
+        const rgbA = hexToRgb(darkColors[index])  
+        const rgbB = hexToRgb(lightColors[index]) 
+
+        const r = lerp(rgbA.r, rgbB.r, transitionRef)
+        const g = lerp(rgbA.g, rgbB.g, transitionRef)
+        const b = lerp(rgbA.b, rgbB.b, transitionRef)
+
+        gradient.addColorStop(i, `rgb(${r}, ${g}, ${b})`); 
+
+        index++;
+    }
+        
+    ctx.fillStyle = gradient; //define o estilo de preenchimento como o gradiente criado
+    ctx.fillRect(0, 0, width, height); //preenche todo o canvas com o gradiente
+}
 
 const drawSun = (ctx: CanvasRenderingContext2D, centerX: number, centerY: number, radius: number, image: HTMLImageElement) => {
 
@@ -54,4 +87,4 @@ const drawStars = (ctx: CanvasRenderingContext2D, stars: Star[], shinyStars: Shi
     });
 };
 
-export { drawSun, drawPlanets, drawOrbits, drawStars };
+export { drawSun, drawPlanets, drawOrbits, drawStars, drawBackground };

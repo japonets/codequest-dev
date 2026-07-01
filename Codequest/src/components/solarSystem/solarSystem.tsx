@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { planets } from '../../data/planets';
-import { drawSun, drawPlanets, drawOrbits, drawStars } from '../../utils/drawHelpers';
+import { drawSun, drawPlanets, drawOrbits, drawStars, drawBackground } from '../../utils/drawHelpers';
 import useAnimation from '../../hooks/useAnimation';
 import type { Star, ShinyStar } from "../../data/stars";
 import type { PlanetPosition } from "../../data/planets";
@@ -8,6 +8,16 @@ import sol from "../../assets/sol.png"
 
 const SolarSystem: React.FC = () => {
 
+    const [tema, setTema] = useState<'dark' | 'light'>('dark'); //useState é um hook do React que permite criar um estado, nesse caso, para o tema, que pode ser "dark" ou "light". O tipo <"dark" | "light"> é usado para garantir que o estado só possa ter esses dois valores.
+
+    const zoomRef = React.useRef(1); //valor inicial 1 representa o zoom padrão
+    const transitionRef = React.useRef(0); //controle de transição entre temas escuro e claro
+
+    //refs para controle do arrastar
+    const isDraggingRef = React.useRef(false); //indica se o usuário está arrastando o mouse
+    const dragStartRef = React.useRef({ x: 0, y: 0 }); //armazena a posição inicial do mouse quando o usuário começa a arrastar
+    const cameraOffsetRef = React.useRef({ x: 0, y: 0 }); //armazena o deslocamento da câmera, que será usado para mover a visão do sistema solar quando o usuário arrasta o mouse
+    
     const canvasRef = React.useRef<HTMLCanvasElement>(null); //useRef é um hook do React que permite criar uma referência a um elemento do DOM, nesse caso, o canvas. O tipo HTMLCanvasElement é usado para garantir que a referência seja do tipo correto.
 
     const planetAngles = useRef(
@@ -51,7 +61,8 @@ const SolarSystem: React.FC = () => {
             }));
             
         }//função para lidar com o redimensionamento da janela, garantindo que o canvas se ajuste ao novo tamanho
-
+        
+        
         const centerX = centerRef.current.x = canvas.width / 2;
         const centerY = centerRef.current.y = canvas.height / 2;
 
@@ -94,45 +105,91 @@ const SolarSystem: React.FC = () => {
     
     
     useAnimation(() => {
-      const canvas = canvasRef.current;
-      const ctx = ctxRef.current;
-      const centerX = centerRef.current.x;
-      const centerY = centerRef.current.y;
-      
-      if (!canvas || !ctx) return;
+        const canvas = canvasRef.current;
+        const ctx = ctxRef.current;
+        const centerX = centerRef.current.x;
+        const centerY = centerRef.current.y;
+        
+        if(tema === 'light' && transitionRef.current < 1) {
+            transitionRef.current += 0.02;
+        }
+        
+        if(tema === 'dark' && transitionRef.current > 0) {
+            transitionRef.current -= 0.02;
+        }
+        
+        if (!canvas || !ctx) return;
+        
+        const radius = 30;
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height); //limpa o canvas para redesenhar os planetas na nova posição
+        //background
+        drawBackground(ctx, canvas.width, canvas.height, transitionRef.current, centerX, centerY);
+        //estrelas
+        drawStars(ctx, starsRef.current, shinyStarsRef.current); 
+        
+        ctx.save(); //salva o estado atual do canvas, incluindo transformações e estilos
+        ctx.translate(centerX, centerY); //translada o canvas para a posição do mouse, permitindo que o usuário mova a visão do sistema solar com o mouse
+        ctx.scale(zoomRef.current, zoomRef.current); //aplica o zoom no canvas
+        ctx.translate(-centerX, -centerY); //translada o canvas de volta para a posição original, garantindo que o zoom seja aplicado corretamente
+        
+        ctx.translate(cameraOffsetRef.current.x, cameraOffsetRef.current.y); //aplica o deslocamento da câmera, permitindo que o usuário arraste a visão do sistema solar com o mouse
 
-      const radius = 30;
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height); //limpa o canvas para redesenhar os planetas na nova posição
-
-      //background
-      const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, canvas.width * 0.75); //cria um gradiente radial para o fundo do canvas, com o centro no sol e se expandindo até as bordas do canvas
-
-      gradient.addColorStop(0,   '#220144')  // roxo escuro no centro
-      gradient.addColorStop(0.2, '#190331')  // azul escuro
-      gradient.addColorStop(0.5, '#0e0730')  // roxo/azul médio
-      gradient.addColorStop(0.75, '#0f051b')  // quase preto
-      gradient.addColorStop(1,   '#000000')  // preto nas bordas
-      ctx.fillStyle = gradient; //define o estilo de preenchimento como o gradiente criado
-      ctx.fillRect(0, 0, canvas.width, canvas.height); //preenche todo o canvas com o gradiente
-
-      //estrelas
-      drawStars(ctx, starsRef.current, shinyStarsRef.current); 
-
-      //sol
-      drawSun(ctx, centerX, centerY, radius, sunImageRef.current!); 
-
-      //orbitas
-      drawOrbits(ctx, planets, centerX, centerY);
-
-      planetAngles.current = planetAngles.current.map((angle, index) => angle + planets[index].rotationSpeed); //atualiza os ângulos de cada planeta com base na velocidade de rotação definida em planets
-
-      drawPlanets(ctx, planetPositionRef.current, planetAngles.current, centerX, centerY); //desenha os planetas na nova posição calculada
+        //sol
+        drawSun(ctx, centerX, centerY, radius, sunImageRef.current!); 
+        
+        //orbitas
+        drawOrbits(ctx, planets, centerX, centerY);
+        
+        planetAngles.current = planetAngles.current.map((angle, index) => angle + planets[index].rotationSpeed); //atualiza os ângulos de cada planeta com base na velocidade de rotação definida em planets
+        
+        drawPlanets(ctx, planetPositionRef.current, planetAngles.current, centerX, centerY); //desenha os planetas na nova posição calculada
+        
+        ctx.restore();//restaura o estado do canvas para o que era antes do ctx.save(), garantindo que as transformações aplicadas não afetem outros elementos desenhados no canvas
     });
+    
+    const handleZoom = (event: React.WheelEvent<HTMLCanvasElement>) => {
+        const zoom = event.deltaY > 0 ? 0.9 : 1.1; //se o usuário rolar para baixo, o zoom será reduzido (0.9), se rolar para cima, o zoom será aumentado (1.1)
+        zoomRef.current *= zoom; //atualiza o valor do zoom multiplicando pelo fator de zoom calculado
+        zoomRef.current = Math.min(Math.max(0.5, zoomRef.current), 2); //limita o zoom entre 0.5x e 2x
+    }
+
+    const handleMouseDown = (event: React.MouseEvent<HTMLCanvasElement>) => {
+        isDraggingRef.current = true;
+        dragStartRef.current = { x: event.clientX, y: event.clientY }; //armazena a posição inicial do mouse quando o usuário começa a arrastar
+    }
+    
+    const handleMouseMove = (event: React.MouseEvent<HTMLCanvasElement>) => {
+        const limitx = 1000; 
+        const limity = 300;
+        if (isDraggingRef.current) {
+            const dx = event.clientX - dragStartRef.current.x;
+            const dy = event.clientY - dragStartRef.current.y;
+
+            cameraOffsetRef.current = {
+                x: cameraOffsetRef.current.x + dx > limitx ? limitx : cameraOffsetRef.current.x + dx < -limitx ? -limitx : cameraOffsetRef.current.x + dx,
+                y: cameraOffsetRef.current.y + dy > limity ? limity : cameraOffsetRef.current.y + dy < -limity ? -limity : cameraOffsetRef.current.y + dy
+            };
+            dragStartRef.current = { x: event.clientX, y: event.clientY };
+        }
+    };
+
+    const handleMouseUp = () => {
+        isDraggingRef.current = false;
+    };
 
   return (
     <div>
-        <canvas ref={canvasRef} width={window.innerWidth} height={window.innerHeight} />
+        <canvas onWheel={handleZoom} onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} ref={canvasRef} width={window.innerWidth} height={window.innerHeight}/>
+        <label className="mode-toggle">
+            <span className="icon">
+               <img src={tema === 'light' ? 'src/assets/light-mode.png' : 'src/assets/dark-mode.png'} alt={tema === 'light' ? "Light Mode" : "Dark Mode"} />
+            </span>
+            <label className="switch">
+                <input type="checkbox" onChange={() => setTema(tema === 'light' ? 'dark' : 'light')} />
+                <span className="slider round"></span>
+            </label>
+        </label>
     </div>
   );
 };
