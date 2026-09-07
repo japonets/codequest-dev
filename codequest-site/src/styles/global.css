@@ -1,0 +1,17 @@
+/* reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* variáveis de cor — útil pra vários devs usarem as mesmas cores */
+:root {
+  --color-bg: #16052E;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-white);
+  font-family: 'Inter', sans-serif;
+}
