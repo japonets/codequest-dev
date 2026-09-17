@@ -1,0 +1,39 @@
+.section {
+    background-color: #1d0535;
+    color: #ffffff;
+    padding: 110px clamp(24px, 6.65vw, 96px) 105px;
+}
+
+.container {
+    margin: 0 auto;
+    max-width: 1248px;
+    width: 100%;
+}
+
+.header {
+    margin-bottom: 40px;
+}
+
+.title {
+    font-family: 'Pixelify Sans', sans-serif;
+    font-size: 46px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    line-height: 1;
+}
+
+.subtitle {
+    color: #cdbedb;
+    font-family: 'Inter', sans-serif;
+    font-size: 18px;
+    line-height: 1.45;
+    margin-top: 23px;
+    max-width: 850px;
+}
+
+.cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: clamp(16px, 1.65vw, 24px);
+    justify-content: center;
+}
