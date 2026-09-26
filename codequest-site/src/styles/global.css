@@ -13,4 +13,10 @@
 body {
   background-color: #FFFF;
   margin: 0;
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+html {
+  scroll-behavior: smooth;
 }
