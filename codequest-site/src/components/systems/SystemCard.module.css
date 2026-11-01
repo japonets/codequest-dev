@@ -1,0 +1,64 @@
+.card {
+  background-color: #2B1550;
+  border: 1px solid #604480;
+  border-radius: 18px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  color: #ffffff;
+  width: 25.125rem;
+  height: 13.125rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.icon {
+  font-size: 1.5rem;
+}
+
+.tag {
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+}
+
+.title {
+  font-size: 1.1rem;
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.description {
+  font-size: 0.9rem;
+  color: #9e97b8;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Cores Temáticas */
+.purple { color: #8E69EA; }
+.purpleBg { background-color: rgba(167, 139, 250, 0.15); color: #8E69EA; }
+
+.orange { color: #FFB52E; }
+.orangeBg { background-color: rgba(251, 191, 36, 0.15); color: #FFB52E; }
+
+.green { color: #49C9A8; }
+.greenBg { background-color: rgba(52, 211, 153, 0.15); color: #49C9A8; }
+
+.pink { color: #ED68A9; }
+.pinkBg { background-color: rgba(244, 114, 182, 0.15); color: #ED68A9; }
+
+.blue { color: #75D5FF; }
+.blueBg { background-color: rgba(96, 165, 250, 0.15); color: #75D5FF; }
+
+.gray { color: #C39AF5; }
+.grayBg { background-color: rgba(148, 163, 184, 0.15); color: #C39AF5; }

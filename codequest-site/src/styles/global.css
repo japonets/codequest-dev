@@ -5,12 +5,27 @@
   box-sizing: border-box;
 }
 
-/* variáveis de cor — útil pra vários devs usarem as mesmas cores */
 :root {
+  --font-main: 'Inter', sans-serif;
+  --font-pixel: 'Pixelify Sans', sans-serif;
   --color-bg: #16052E;
 }
 
 body {
+  font-family: var(--font-main);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   background-color: #FFFF;
   margin: 0;
+}
+
+@media (max-width: 768px) {
+  html {
+    font-size: 87.5%; /* Reduz a tipografia geral para 14px base */
+  }
+  
+  body, #root {
+    overflow-x: hidden;
+    width: 100%;
+  }
 }

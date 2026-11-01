@@ -60,3 +60,13 @@
   background-color: #2A1244;
   color: #FFB52E;
 }
+
+@media (max-width: 768px) {
+  .linksContainer {
+    display: none; /* Substitua pela lógica do menu mobile quando ativo */
+  }
+  
+  .menuButton {
+    display: block; /* Oculto no desktop, visível no mobile */
+  }
+}
